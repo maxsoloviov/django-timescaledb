@@ -5,7 +5,11 @@ from timescale.db.models.fields import TimescaleDateTimeField
 
 
 class TimescaleSchemaEditor(DatabaseSchemaEditor):
-    sql_is_hypertable = 'SELECT * FROM timescaledb_information.hypertables WHERE hypertable_name = {table}'
+    sql_is_hypertable = (
+        'SELECT * FROM timescaledb_information.hypertables WHERE hypertable_name = {table}'
+        if not getattr(settings, "TIMESCALE_VERSION_LT_2", False) else
+        'SELECT * FROM timescaledb_information.hypertable WHERE table_name = {table}'
+    )
 
     sql_assert_is_hypertable = (
             'DO $do$ BEGIN '
